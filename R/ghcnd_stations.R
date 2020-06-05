@@ -59,8 +59,11 @@ ghcnd_stations <- function(refresh = FALSE, ...) {
   stopifnot(length(refresh) == 1)
   sta <- get_stations(refresh, ...)
   inv <- get_inventory(refresh, ...)
-  df <- merge(sta, inv[, -c(2, 3)], by = "id")
-  tibble::as_tibble(df[stats::complete.cases(df), ])
+  
+  merge(data.table::setDT(sta), 
+        data.table::setDT(inv[, -c(2, 3)]), by = "id") %>% 
+    na.omit() %>% 
+    tibble::as_tibble()
 }
 
 get_stations <- function(refresh = FALSE, ...) {
